@@ -8,12 +8,13 @@ module.exports = {
 };
 
 function get() {
-    return db('users');
+    return db('users')
+        .select('id', 'username', 'created_at', 'updated_at');
 };
 
 function getById(id) {
     return db('users')
-        .select('id', 'username')
+        .select('id', 'username', 'created_at', 'updated_at')
         .where({ id })
         .first();
 };
