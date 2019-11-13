@@ -1,51 +1,55 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const Users = require("../models/users-model");
-const secrets = require("../config/secrets-config");
-const validateRegister = require("../middleware/validateRegister-middleware");
-const validateLogin = require("../middleware/validateLogin-middleware");
+const validateUser = require("./validateUser");
+const generateToken = require("./generateToken");
+const checkIfUserExists = require("../middleware/checkIfUserExists-middleware");
 
 // POST - Register a user
-router.post("/register", validateRegister, (req, res) => {
+router.post("/register", checkIfUserExists, (req, res) => {
     const user = req.body;
-    const hash = bcrypt.hashSync(user.password, 12);
+    const validationResult = validateUser(user, req.path);
+    
+    if (validationResult.isSuccessful) {
+        const hashedPassword = bcrypt.hashSync(user.password, 12);
+        user.password = hashedPassword;
 
-    user.password = hash;
-
-    Users.add(user)
-    .then(user => res.status(200).json(user))
-    .catch(err => res.status(500).json({ error: "There was an error while registering the user." }));
+        Users.add(user)
+        .then(user => res.status(200).json(user))
+        .catch(err => res.status(500).json({ error: "There was an error while registering the user." }));
+    } else {
+        res.status(400).json({
+            message: "Invalid credentials, please refer to errors",
+            errors: validationResult.errors
+        });
+    };
 });
 
 // POST - Login a user
-router.post("/login", validateLogin, (req, res) => {
+router.post("/login", (req, res) => {
     const { username, password } = req.body;
+    const validationResult = validateUser(req.body, req.path);
 
-    Users.getByUsername(username)
-    .then(user => {
-        if (user && bcrypt.compareSync(password, user.password)) {
-            const token = generateToken(user);
-
-            res.status(200).json({ message: "Success! You are logged in!", token })
-        } else {
-            res.status(401).json({ message: "Please provide valid login credentials." })
-        }
-    })
-    .catch(err => res.status(500).json({ error: "There was error while logging in the user." }))
-});
-
-// Create an authentication token
-function generateToken(user) {
-    const payload = {
-        id: user.id,
-        username: user.username
+    if (validationResult.isSuccessful) {
+        Users.getByUsername(username)
+        .then(user => {
+            if (user && bcrypt.compareSync(password, user.password)) {
+                const token = generateToken(user);
+                res.status(200).json({ message: "Success! You are logged in!", token });                
+            } else if (user) {
+                res.status(400).json({ message: "Username and password do not match." });
+            } else {
+                res.status(400).json({ message: "A user with that username does not exist." });
+            };
+        })
+        .catch(err => res.status(500).json({ error: "There was error while logging in the user." }));
+    } else {
+        res.status(400).json({
+            message: "Invalid credentials, please refer to errors.",
+            errors: validationResult.errors
+        });
     };
-
-    const options = { expiresIn: '8hr' };
-
-    return jwt.sign(payload, secrets.jwtSecret, options);
-};
+});
 
 module.exports = router;

@@ -9,7 +9,7 @@ const server = express();
 // Server middleware
 middlewareConfig(server);
 
-// Endpoint / Routes funneled through 'api-router.js'
+// Endpoints / Routes funneled through 'api-router.js'
 server.use("/api", apiRouter);
 
 module.exports = server;
