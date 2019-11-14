@@ -12,11 +12,12 @@ router.post("/register", checkIfUserExists, (req, res) => {
     const validationResult = validateUser(user, req.path);
     
     if (validationResult.isSuccessful) {
+        const token = generateToken(user);
         const hashedPassword = bcrypt.hashSync(user.password, 12);
         user.password = hashedPassword;
 
         Users.add(user)
-        .then(user => res.status(200).json(user))
+        .then(user => res.status(200).json({ user, token }))
         .catch(err => res.status(500).json({ error: "The server encountered an error while registering the user." }));
     } else {
         res.status(400).json({
