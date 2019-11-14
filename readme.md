@@ -14,6 +14,8 @@ The `api` directory holds the server, as well as the router "funnel" (apiRouter)
 - `server.js` is configured and ready to run using the standard middleware: `helmet`, `cors`, and `express.json()`.
 - All route files built out will be imported into `api-router.js`, which acts as funnel for all route files leading into `server.js`.
 
+<hr />
+
 ### auth 
 The `auth` directory hosts all required files for basic user registration/login. 
 - `POST` requests to `/login` and `/registration` will both run through `validateUser.js` to ensure the credentials are filled out and valid.
@@ -21,13 +23,19 @@ The `auth` directory hosts all required files for basic user registration/login.
 - Any requests to this route can be called through: `/api/auth`.
 - **NOTE**: Any additional required fields must be implemented into `validateUser.js` in the commented area of the code. This will ensure those values exist and are valid.
 
+<hr />
+
 ### config
 The `config` directory holds any secrets used, as well as the middleware configuration for the server (`cors`, `helmet`, etc.). This helps prevent the middleware goodies from polluting the `server.js` file.
+
+<hr />
 
 ### database
 The `database` directory has the `db-config.js`, `seeds`, and `migrations`. A `users` table is built out to allow you to add users during registration.
 - **NOTE**: If you wish to add additional columns to the user table, all you need to do is run: `knex migrate:rollback`, and add your new columns to the table. Upon finishing, be sure to run: `knex migrate:latest` to revive the table back to life!
 - The seeds directory, `seeds`, contains a cleanup file from the `knex-cleaner` package, to help keep your data nice and clean...ed up. :)
+
+<hr />
 
 ### middleware
 The `middleware` directory is nice and straight forward - it will be the home for any middleware you wish to build out. Welcome home, middlewarez!
@@ -36,9 +44,12 @@ The `middleware` directory is nice and straight forward - it will be the home fo
 - `checkIfUserExists-middleware.js` - Checks if the username is already taken, when registering a user. An error will be provided informing if the username is taken, if not, it will proceed with registration.
 - `restricted-middleware.js` - Protects all endpoints using it behind jwt based authorization. The endpoint will not be accessible unless a valid token is presented.
 
+<hr />
 
 ### models
 The `models` directory will hold all of your database help functions. This will be what your routes access to complete `GET`, `POST,` `PUT`, and `DELETE` requests.
+
+<hr />
 
 ### routes 
 The `routes` directory is meant to hold all of your routes/endpoints.
