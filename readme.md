@@ -1,11 +1,11 @@
 # Node.js Backend Boilerplate
 
-This has been created to have a basic server and database structure ready to rock. 
+This has been created to have a basic server and database structure ready to rock.
 
 ## Getting Started
 1) Fork and `git clone` this repository.
 2) Run `npm i` to install all dependencies.
-3) Run `npm run server` to get that server up and ready to rock!
+3) Run `npm run server` to get that server up and rollin'!
 
 ## Directories:
 
